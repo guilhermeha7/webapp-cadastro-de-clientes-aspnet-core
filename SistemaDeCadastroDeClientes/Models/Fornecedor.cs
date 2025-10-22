@@ -14,6 +14,7 @@ namespace SistemaDeCadastroDeClientes.Models
 
         [Required]
         [StringLength(14)]
+        [Display(Name = "CNPJ")]
         public string Cnpj { get; set; }
 
         [Required]
@@ -21,10 +22,12 @@ namespace SistemaDeCadastroDeClientes.Models
 
         [Required]
         [StringLength(8)]
+        [Display(Name = "CEP")]
         public string Cep { get; set; }
 
         [Required]
         [StringLength(255)]
+        [Display(Name = "Endereço")]
         public string Endereco { get; set; }
 
         //Campo opcional

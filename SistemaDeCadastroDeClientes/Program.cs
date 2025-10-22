@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NuGet.Protocol.Core.Types;
 using SistemaDeCadastroDeClientes.Context;
+using SistemaDeCadastroDeClientes.Models;
+using SistemaDeCadastroDeClientes.Repositories;
+using SistemaDeCadastroDeClientes.Services;
 
 namespace SistemaDeCadastroDeClientes
 {
@@ -18,6 +22,8 @@ namespace SistemaDeCadastroDeClientes
                     new MySqlServerVersion(new Version(8, 0, 43)) // ajuste para a versão do seu MySQL
                 )
             );
+            builder.Services.AddScoped(typeof(IFornecedorService), typeof(FornecedorService));
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             var app = builder.Build();
 

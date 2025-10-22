@@ -1,0 +1,51 @@
+﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor
+
+<h2>Editar</h2>
+<h4>Fornecedor</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Cnpj" class="form-label"></label>
+                <input asp-for="Cnpj" class="form-control" />
+                <span asp-validation-for="Cnpj" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Segmento" class="form-label"></label>
+                <select asp-for="Segmento" class="form-control"></select>
+                <span asp-validation-for="Segmento" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Cep" class="form-label"></label>
+                <input asp-for="Cep" class="form-control" />
+                <span asp-validation-for="Cep" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Endereco" class="form-label"></label>
+                <input asp-for="Endereco" class="form-control" />
+                <span asp-validation-for="Endereco" class="text-danger"></span>
+            </div>
+            <div class="mb-5">
+                <label asp-for="CaminhoDaFoto" class="form-label"></label>
+                <input asp-for="CaminhoDaFoto" class="form-control" />
+                <span asp-validation-for="CaminhoDaFoto" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

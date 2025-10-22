@@ -1,0 +1,53 @@
+﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor;
+
+<h2>Deletar</h2>
+<h4>Tem certeza que deseja deletar este fornecedor?</h4>
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Cnpj)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Cnpj)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Segmento)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Segmento)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Cep)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Cep)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Endereco)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Endereco)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CaminhoDaFoto)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CaminhoDaFoto)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Deletar" class="btn btn-danger" /> 
+        <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
+    </form>
+</div>
