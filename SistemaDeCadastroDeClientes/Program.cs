@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using SistemaDeCadastroDeClientes.Context;
+
 namespace SistemaDeCadastroDeClientes
 {
     public class Program
@@ -8,6 +12,12 @@ namespace SistemaDeCadastroDeClientes
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseMySql(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    new MySqlServerVersion(new Version(8, 0, 43)) // ajuste para a versão do seu MySQL
+                )
+            );
 
             var app = builder.Build();
 
