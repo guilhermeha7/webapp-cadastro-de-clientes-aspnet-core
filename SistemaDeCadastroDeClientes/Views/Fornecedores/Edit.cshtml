@@ -1,44 +1,69 @@
-﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor
+﻿@model SistemaDeCadastroDeClientes.ViewModels.FornecedorViewModel
 
 <h2>Editar</h2>
 <h4>Fornecedor</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Fornecedor.Id" />
+            <input type="hidden" asp-for="Fornecedor.CaminhoDaFoto" />
+
             <div class="mb-3">
-                <label asp-for="Nome" class="form-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
+                <label asp-for="Fornecedor.Nome" class="form-label"></label>
+                <input asp-for="Fornecedor.Nome" class="form-control" />
+                <span asp-validation-for="Fornecedor.Nome" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label asp-for="Cnpj" class="form-label"></label>
-                <input asp-for="Cnpj" class="form-control" />
-                <span asp-validation-for="Cnpj" class="text-danger"></span>
+                <label asp-for="Fornecedor.Cnpj" class="form-label"></label>
+                <input asp-for="Fornecedor.Cnpj" class="form-control" id="CNPJ" />
+                <span asp-validation-for="Fornecedor.Cnpj" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label asp-for="Segmento" class="form-label"></label>
-                <select asp-for="Segmento" class="form-control"></select>
-                <span asp-validation-for="Segmento" class="text-danger"></span>
+                <label asp-for="Fornecedor.Segmento" class="form-label"></label>
+                <select asp-for="Fornecedor.Segmento" class="form-select" asp-items="@Model.Segmentos"></select>
+                <span asp-validation-for="Fornecedor.Segmento" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label asp-for="Cep" class="form-label"></label>
-                <input asp-for="Cep" class="form-control" />
-                <span asp-validation-for="Cep" class="text-danger"></span>
+                <label asp-for="Fornecedor.Cep" class="form-label"></label>
+                <input asp-for="Fornecedor.Cep" class="form-control" id="CEP" />
+                <span asp-validation-for="Fornecedor.Cep" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label asp-for="Endereco" class="form-label"></label>
-                <input asp-for="Endereco" class="form-control" />
-                <span asp-validation-for="Endereco" class="text-danger"></span>
+                <label asp-for="Fornecedor.Endereco" class="form-label"></label>
+                <input asp-for="Fornecedor.Endereco" class="form-control" id="Endereco" />
+                <span asp-validation-for="Fornecedor.Endereco" class="text-danger"></span>
             </div>
+
             <div class="mb-5">
-                <label asp-for="CaminhoDaFoto" class="form-label"></label>
-                <input asp-for="CaminhoDaFoto" class="form-control" />
-                <span asp-validation-for="CaminhoDaFoto" class="text-danger"></span>
+                <label class="form-label">Foto (opcional) (somente .png)</label>
+
+                <!-- Preview só aparece se o fornecedor já tiver uma foto -->
+                @if (!string.IsNullOrEmpty(Model.Fornecedor?.CaminhoDaFoto))
+                {
+                    <div id="previewContainer" class="mb-2">
+                        <img id="previewFoto"
+                             src="@Url.Content(Model.Fornecedor.CaminhoDaFoto)"
+                             alt="Foto do fornecedor" width="150" class="img-fluid" />
+                    </div>
+                }
+                else
+                {
+                    <div id="previewContainer" class="mb-2" style="display: none;">
+                        <img id="previewFoto" src="" alt="Preview da foto" width="150" class="img-fluid" />
+                    </div>
+                }
+
+                <input asp-for="Foto" type="file" class="form-control" id="inputFoto" accept="image/png" />
+                <span asp-validation-for="Foto" class="text-danger"></span>
             </div>
-            <div class="mb-3">
+
+            <div class="d-flex align-items-center gap-3 mb-5">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
             </div>
@@ -47,5 +72,80 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Máscaras (CNPJ e CEP)
+            if (window.jQuery?.fn?.mask) {
+                $('#CNPJ').mask('00.000.000/0000-00');
+                $('#CEP').mask('00000-000');
+            }
+
+        // Consulta ViaCEP
+        const cepEl = document.getElementById('CEP');
+        const enderecoEl = document.getElementById('Endereco');
+
+        if (cepEl && enderecoEl) {
+            cepEl.addEventListener('blur', () => {
+                const cepLimpo = (cepEl.value || '').replace(/\D/g, '');
+                if (cepLimpo.length !== 8) return;
+
+                fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert('CEP não encontrado.');
+                            return;
+                        }
+
+                        let enderecoCompleto = data.logradouro || '';
+                        if (data.complemento) enderecoCompleto += ' ' + data.complemento;
+                        if (data.bairro) enderecoCompleto += ' - ' + data.bairro;
+                        if (data.localidade && data.uf) enderecoCompleto += `, ${data.localidade} - ${data.uf}`;
+
+                        enderecoEl.value = enderecoCompleto;
+                    })
+                    .catch(() => alert('Erro ao consultar CEP.'));
+            });
+        }
+
+
+            // Preview da foto
+            try {
+                var inputFoto = document.getElementById('inputFoto');
+                var previewFoto = document.getElementById('previewFoto');
+                var previewContainer = document.getElementById('previewContainer');
+
+                if (!inputFoto) return;
+
+                inputFoto.addEventListener('change', function () {
+                    var file = inputFoto.files && inputFoto.files[0];
+                    if (!file) {
+                        previewContainer.style.display = 'none';
+                        return;
+                    }
+
+                    if (file.type !== 'image/png') {
+                        alert('Por favor, selecione um arquivo no formato PNG.');
+                        inputFoto.value = '';
+                        previewContainer.style.display = 'none';
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewFoto.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } catch (e) {
+                console.error('Erro no preview da foto:', e);
+            }
+        });
+    </script>
 }

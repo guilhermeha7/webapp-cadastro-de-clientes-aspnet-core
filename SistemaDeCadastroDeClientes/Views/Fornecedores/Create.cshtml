@@ -6,39 +6,52 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="mb-3">
                 <label asp-for="Fornecedor.Nome" class="form-label"></label>
                 <input asp-for="Fornecedor.Nome" class="form-control" />
                 <span asp-validation-for="Fornecedor.Nome" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
                 <label asp-for="Fornecedor.Cnpj" class="form-label"></label>
-                <input asp-for="Fornecedor.Cnpj" class="form-control" />
+                <input asp-for="Fornecedor.Cnpj" class="form-control" id="CNPJ" />
                 <span asp-validation-for="Fornecedor.Cnpj" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
                 <label asp-for="Fornecedor.Segmento" class="form-label"></label>
-                <select asp-for="Fornecedor.Segmento" class="form-select" asp-items="@Model.Segmentos">></select>
+                <select asp-for="Fornecedor.Segmento" class="form-select" asp-items="@Model.Segmentos"></select>
                 <span asp-validation-for="Fornecedor.Segmento" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
                 <label asp-for="Fornecedor.Cep" class="form-label"></label>
-                <input asp-for="Fornecedor.Cep" class="form-control" />
+                <input asp-for="Fornecedor.Cep" class="form-control" id="CEP" />
                 <span asp-validation-for="Fornecedor.Cep" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
                 <label asp-for="Fornecedor.Endereco" class="form-label"></label>
-                <input asp-for="Fornecedor.Endereco" class="form-control" />
+                <input asp-for="Fornecedor.Endereco" class="form-control" id="Endereco" />
                 <span asp-validation-for="Fornecedor.Endereco" class="text-danger"></span>
             </div>
+
             <div class="mb-5">
-                <label asp-for="Fornecedor.CaminhoDaFoto" class="form-label"></label>
-                <input asp-for="Fornecedor.CaminhoDaFoto" class="form-control" />
-                <span asp-validation-for="Fornecedor.CaminhoDaFoto" class="text-danger"></span>
+                <label asp-for="Foto" class="control-label">Foto (opcional) (somente .png)</label>
+
+                <!-- container do preview: escondido até o usuário escolher -->
+                <div id="previewContainer" class="mb-2" style="display:none;">
+                    <img id="previewFoto" src="@Url.Content("~/images/avatar.png")" alt="Preview da foto" width="150" class="img-fluid" />
+                </div>
+
+                <input asp-for="Foto" type="file" class="form-control" id="inputFoto" accept="image/png" />
+                <span asp-validation-for="Foto" class="text-danger"></span>
             </div>
-            <div class="mb-3">
+
+            <div class="d-flex align-items-center gap-3 mb-5">
                 <input type="submit" value="Criar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
             </div>
@@ -47,5 +60,79 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // Máscaras (CNPJ e CEP)
+            if (window.jQuery?.fn?.mask) {
+                $('#CNPJ').mask('00.000.000/0000-00');
+                $('#CEP').mask('00000-000');
+            }
+
+        // Consulta ViaCEP
+        const cepEl = document.getElementById('CEP');
+        const enderecoEl = document.getElementById('Endereco');
+
+        if (cepEl && enderecoEl) {
+            cepEl.addEventListener('blur', () => {
+                const cepLimpo = (cepEl.value || '').replace(/\D/g, '');
+                if (cepLimpo.length !== 8) return;
+
+                fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert('CEP não encontrado.');
+                            return;
+                        }
+
+                        let enderecoCompleto = data.logradouro || '';
+                        if (data.complemento) enderecoCompleto += ' ' + data.complemento;
+                        if (data.bairro) enderecoCompleto += ' - ' + data.bairro;
+                        if (data.localidade && data.uf) enderecoCompleto += `, ${data.localidade} - ${data.uf}`;
+
+                        enderecoEl.value = enderecoCompleto;
+                    })
+                    .catch(() => alert('Erro ao consultar CEP.'));
+            });
+        }
+
+            // Preview da foto
+            try {
+                var inputFoto = document.getElementById('inputFoto');
+                var previewFoto = document.getElementById('previewFoto');
+                var previewContainer = document.getElementById('previewContainer');
+
+                if (!inputFoto) return;
+
+                inputFoto.addEventListener('change', function () {
+                    var file = inputFoto.files && inputFoto.files[0];
+                    if (!file) {
+                        previewContainer.style.display = 'none';
+                        return;
+                    }
+
+                    if (file.type !== 'image/png') {
+                        alert('Por favor, selecione um arquivo no formato PNG.');
+                        inputFoto.value = '';
+                        previewContainer.style.display = 'none';
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewFoto.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } catch (e) {
+                console.error('Erro no preview da foto:', e);
+            }
+        });
+    </script>
 }

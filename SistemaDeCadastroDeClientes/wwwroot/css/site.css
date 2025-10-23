@@ -20,3 +20,21 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.foto {
+    width: 160px; 
+    height: 160px;
+    object-fit: cover; /* mantém proporção e corta excesso */
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    display: inline-block;
+}
+
+a {
+    text-decoration: none; /* remove o sublinhado */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0D6EFD !important; /* O Bootstrap aplicava a cor padrão em .nav-link e por isso tinha prioridade. O !important garante que essa cor definida vença. */
+    transition: color 0.3s ease; /*Faz a mudança de cor ser suave, ao longo de 0,3 segundos, em vez de acontecer instantaneamente.*/
+}

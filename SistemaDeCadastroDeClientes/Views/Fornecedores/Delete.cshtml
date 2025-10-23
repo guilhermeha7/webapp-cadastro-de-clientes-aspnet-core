@@ -1,53 +1,67 @@
-﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor;
+﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor
 
-<h2>Deletar</h2>
-<h4>Tem certeza que deseja deletar este fornecedor?</h4>
+@{
+    ViewData["Title"] = "Deletar Fornecedor";
 
-<div>
-    <hr />
+    var caminho = Model?.CaminhoDaFoto;
+    var imgSrc = string.IsNullOrEmpty(caminho)
+        ? Url.Content("~/uploads/fotos_fornecedores/foto-de-perfil-padrao.png")
+        : Url.Content(caminho.StartsWith("~") ? caminho : "~/" + caminho.TrimStart('/'));
+}
 
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cnpj)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cnpj)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Segmento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Segmento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cep)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cep)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Endereco)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Endereco)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CaminhoDaFoto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CaminhoDaFoto)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Deletar" class="btn btn-danger" /> 
-        <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
-    </form>
+<h2 class="mb-4 text-danger">Excluir Fornecedor</h2>
+
+<div class="alert alert-danger" role="alert">
+    <strong>Atenção!</strong> Você está prestes a excluir este fornecedor. Esta ação não poderá ser desfeita.
 </div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <!-- Coluna dos dados -->
+            <div class="col-md-8">
+                <h5 class="card-title mb-3">Confirme os dados antes de excluir:</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Nome</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Nome)</dd>
+
+                    <dt class="col-sm-3">CNPJ</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Cnpj)</dd>
+
+                    <dt class="col-sm-3">Segmento</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Segmento)</dd>
+
+                    <dt class="col-sm-3">CEP</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Cep)</dd>
+
+                    <dt class="col-sm-3">Endereço</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Endereco)</dd>
+                </dl>
+            </div>
+
+            <!-- Coluna da foto -->
+            <div class="col-md-4 d-flex flex-column align-items-center justify-content-start">
+                <h6 class="mb-3 w-100 text-center">Foto</h6>
+
+                <a href="@imgSrc" target="_blank" rel="noopener noreferrer" class="text-center">
+                    <img src="@imgSrc" alt="Foto de @Html.Encode(Model?.Nome)" class="rounded mb-2" style="max-width: 180px; height: auto;" />
+                </a>
+
+                @if (string.IsNullOrEmpty(Model?.CaminhoDaFoto))
+                {
+                    <small class="text-muted">— sem foto —</small>
+                }
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- Botões de ação -->
+        <form asp-action="Delete" method="post" class="d-flex align-items-center gap-3">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Excluir" class="btn btn-danger px-4" />
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancelar</a>
+        </form>
+    </div>
+</div>
+

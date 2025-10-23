@@ -1,49 +1,58 @@
 ﻿@model SistemaDeCadastroDeClientes.Models.Fornecedor
 
-<h2>Detalhes</h2>
-<div>
-    <h4>Fornecedor</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cnpj)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cnpj)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Segmento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Segmento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cep)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cep)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Endereco)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Endereco)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CaminhoDaFoto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CaminhoDaFoto)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a> 
-    <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
+@{
+    ViewData["Title"] = "Detalhes";
+
+    var caminho = Model?.CaminhoDaFoto;
+    var imgSrc = string.IsNullOrEmpty(caminho)
+        ? Url.Content("~/uploads/fotos_fornecedores/foto-de-perfil-padrao.png")
+        : Url.Content(caminho.StartsWith("~") ? caminho : "~/" + caminho.TrimStart('/'));
+}
+
+<h2 class="mb-4">Detalhes</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <!-- Coluna com os dados -->
+            <div class="col-md-8">
+                <h5 class="card-title mb-3">Fornecedor</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Nome</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Nome)</dd>
+
+                    <dt class="col-sm-3">CNPJ</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Cnpj)</dd>
+
+                    <dt class="col-sm-3">Segmento</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Segmento)</dd>
+
+                    <dt class="col-sm-3">CEP</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Cep)</dd>
+
+                    <dt class="col-sm-3">Endereço</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(m => m.Endereco)</dd>
+                </dl>
+            </div>
+
+            <!-- Coluna com a foto -->
+            <div class="col-md-4 d-flex flex-column align-items-center justify-content-start">
+                <h6 class="mb-3 w-100">Foto</h6>
+
+                <a href="@imgSrc" target="_blank" rel="noopener noreferrer" class="text-center">
+                    <img src="@imgSrc" loading="lazy" alt="Foto de @Html.Encode(Model?.Nome)" class="foto rounded" style="max-width: 180px; height: auto;" />
+                </a>
+
+                @if (string.IsNullOrEmpty(Model?.CaminhoDaFoto))
+                {
+                    <small class="text-muted mt-2">— sem foto —</small>
+                }
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar à Lista</a>
+        </div>
+    </div>
 </div>
