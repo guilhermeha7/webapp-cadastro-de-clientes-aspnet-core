@@ -40,7 +40,7 @@
             </div>
 
             <div class="mb-5">
-                <label asp-for="Foto" class="control-label">Foto (opcional) (somente .png)</label>
+                <label asp-for="Foto" class="control-label">Foto (opcional)</label>
 
                 <!-- container do preview: escondido até o usuário escolher -->
                 <div id="previewContainer" class="mb-2" style="display:none;">
@@ -66,73 +66,73 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            
-            // Máscaras (CNPJ e CEP)
-            if (window.jQuery?.fn?.mask) {
+
+            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.mask) {
                 $('#CNPJ').mask('00.000.000/0000-00');
                 $('#CEP').mask('00000-000');
             }
 
-        // Consulta ViaCEP
-        const cepEl = document.getElementById('CEP');
-        const enderecoEl = document.getElementById('Endereco');
+            const cepEl = document.getElementById('CEP');
+            const enderecoEl = document.getElementById('Endereco');
 
-        if (cepEl && enderecoEl) {
-            cepEl.addEventListener('blur', () => {
-                const cepLimpo = (cepEl.value || '').replace(/\D/g, '');
-                if (cepLimpo.length !== 8) return;
+            if (cepEl && enderecoEl) {
+                cepEl.addEventListener('blur', () => {
+                    const cepLimpo = (cepEl.value || '').replace(/\D/g, '');
+                    if (cepLimpo.length !== 8) return;
 
-                fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
-                    .then(resp => resp.json())
-                    .then(data => {
-                        if (data.erro) {
-                            alert('CEP não encontrado.');
+                    fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                        .then(resp => resp.json())
+                        .then(data => {
+                            if (data.erro) {
+                                alert('CEP não encontrado.');
+                                return;
+                            }
+
+                            let enderecoCompleto = data.logradouro || '';
+                            if (data.complemento) enderecoCompleto += ' ' + data.complemento;
+                            if (data.bairro) enderecoCompleto += ' - ' + data.bairro;
+                            if (data.localidade && data.uf) enderecoCompleto += `, ${data.localidade} - ${data.uf}`;
+
+                            enderecoEl.value = enderecoCompleto;
+                        })
+                        .catch(() => alert('Erro ao consultar CEP.'));
+                });
+            }
+
+            try {
+                const inputFoto = document.getElementById('inputFoto');
+                const previewFoto = document.getElementById('previewFoto');
+                const previewContainer = document.getElementById('previewContainer');
+
+                if (!inputFoto) {
+                    console.warn('inputFoto não encontrado — pulando preview de imagem.');
+                } else {
+                    inputFoto.addEventListener('change', function () {
+                        const file = inputFoto.files && inputFoto.files[0];
+                        if (!file) {
+                            if (previewContainer) previewContainer.style.display = 'none';
                             return;
                         }
 
-                        let enderecoCompleto = data.logradouro || '';
-                        if (data.complemento) enderecoCompleto += ' ' + data.complemento;
-                        if (data.bairro) enderecoCompleto += ' - ' + data.bairro;
-                        if (data.localidade && data.uf) enderecoCompleto += `, ${data.localidade} - ${data.uf}`;
+                        if (file.type !== 'image/png') {
+                            alert('Por favor, selecione um arquivo no formato PNG.');
+                            inputFoto.value = '';
+                            if (previewContainer) previewContainer.style.display = 'none';
+                            return;
+                        }
 
-                        enderecoEl.value = enderecoCompleto;
-                    })
-                    .catch(() => alert('Erro ao consultar CEP.'));
-            });
-        }
-
-            // Preview da foto
-            try {
-                var inputFoto = document.getElementById('inputFoto');
-                var previewFoto = document.getElementById('previewFoto');
-                var previewContainer = document.getElementById('previewContainer');
-
-                if (!inputFoto) return;
-
-                inputFoto.addEventListener('change', function () {
-                    var file = inputFoto.files && inputFoto.files[0];
-                    if (!file) {
-                        previewContainer.style.display = 'none';
-                        return;
-                    }
-
-                    if (file.type !== 'image/png') {
-                        alert('Por favor, selecione um arquivo no formato PNG.');
-                        inputFoto.value = '';
-                        previewContainer.style.display = 'none';
-                        return;
-                    }
-
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewFoto.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                });
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (previewFoto) previewFoto.src = e.target.result;
+                            if (previewContainer) previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
             } catch (e) {
                 console.error('Erro no preview da foto:', e);
             }
+
         });
     </script>
 }

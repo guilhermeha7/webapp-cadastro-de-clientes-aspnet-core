@@ -43,7 +43,6 @@
             <div class="mb-5">
                 <label class="form-label">Foto (opcional) (somente .png)</label>
 
-                <!-- Preview só aparece se o fornecedor já tiver uma foto -->
                 @if (!string.IsNullOrEmpty(Model.Fornecedor?.CaminhoDaFoto))
                 {
                     <div id="previewContainer" class="mb-2">
